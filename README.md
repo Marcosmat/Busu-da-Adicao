@@ -4,6 +4,7 @@
 ![Disciplina](https://img.shields.io/badge/Disciplina-Matem%C3%A1tica-blue)
 ![Público](https://img.shields.io/badge/P%C3%BAblico-3%C2%BA%20ano%20Fundamental%20I-orange)
 ![BNCC](https://img.shields.io/badge/BNCC-EF03MA06%20%7C%20EF03MA08-purple)
+![VibeCoder](https://img.shields.io/badge/Desenvolvido%20com-Vibe%20Coding-ff69b4)
 
 > **Relatório Pedagógico e Guia do Educador**
 > Este documento apresenta a fundamentação teórica, os objetivos de aprendizagem e as instruções de uso do jogo educativo **Busão dos Bichos**.
@@ -19,7 +20,8 @@
 - [6. Instruções de Uso](#6-instruções-de-uso)
 - [7. Sistema de Pontuação e Avaliação](#7-sistema-de-pontuação-e-avaliação)
 - [8. Recomendações para Sala de Aula](#8-recomendações-para-sala-de-aula)
-- [9. Requisitos Técnicos (Áudio)](#9-requisitos-técnicos-áudio)
+- [9. Requisitos Técnicos e Áudio](#9-requisitos-técnicos-e-áudio)
+- [10. Créditos e Agradecimentos](#10-créditos-e-agradecimentos)
 
 ---
 
@@ -78,16 +80,27 @@ O jogo atende diretamente às seguintes habilidades de Matemática para o Ensino
 *   **Prática em Duplas:** Os alunos jogam nos tablets/computadores, discutindo as opções entre si.
 *   **Registro no Caderno:** **Recomendação de Ouro:** Peça para que os alunos anotem no papel a "conta armada" das fases de comparação (dois ônibus), garantindo que a matemática não fique apenas na tela, mas seja registrada e consolidada.
 
-## 9. Requisitos Técnicos (Áudio)
-O jogo conta com suporte a efeitos sonoros imersivos. Para a experiência completa, certifique-se de que os arquivos `.mp3` estejam na pasta `sounds/`:
+## 9. Requisitos Técnicos e Áudio
+O jogo foi construído utilizando tecnologias web padrão (HTML5, CSS3 e JavaScript), o que significa que:
+*   **Não requer instalação:** Roda diretamente em navegadores modernos (recomendado Google Chrome, Edge ou Safari).
+*   **Responsivo:** Adapta-se a telas de computadores, tablets e celulares.
+*   **Efeitos Sonoros:** Para a experiência completa, certifique-se de que os arquivos `.mp3` estejam na pasta `sounds/`:
 
-```text
-📁 sounds/
- ├── bus-arriving.mp3      (Ônibus chegando)
- ├── animals-boarding.mp3  (Animais entrando)
- ├── animals-leaving.mp3   (Animais saindo)
- ├── bus-at-destination.mp3(Ponto de parada)
- ├── error.mp3             (Resposta errada)
- ├── success.mp3           (Resposta correta)
- ├── level-up.mp3          (Tela final)
- └── soundInit.mp3         (Tela inicial "Jogar")
+    📁 sounds/
+     ├── bus-arriving.mp3      (Ônibus chegando)
+     ├── animals-boarding.mp3  (Animais entrando)
+     ├── animals-leaving.mp3   (Animais saindo)
+     ├── bus-at-destination.mp3(Ponto de parada)
+     ├── error.mp3             (Resposta errada)
+     ├── success.mp3           (Resposta correta)
+     ├── level-up.mp3          (Tela final)
+     └── soundInit.mp3         (Tela inicial "Jogar")
+
+**Créditos de Áudio:** Efeitos obtidos gratuitamente em [Myinstants](https://www.myinstants.com/pt/instant/) e [Pixabay Sound Effects](https://pixabay.com/pt/sound-effects/).
+
+## 10. Créditos e Agradecimentos
+*   **Idealização e Design Pedagógico:** Criado com base na prática docente e na Teoria dos Campos Conceituais.
+*   **Desenvolvimento e Código:** Desenvolvido em parceria com a Inteligência Artificial **DeepSeek**, utilizando a abordagem **"VibeCoding"** 
+
+---
+*Desenvolvido com foco na construção do pensamento matemático e no engajamento infantil.*
