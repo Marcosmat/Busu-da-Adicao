@@ -1,4 +1,4 @@
-# 🚌 Busão dos Bichos
+# 🚌 Busão da Adição
 
 ![Status](https://img.shields.io/badge/Status-Conclu%C3%ADdo-brightgreen)
 ![Disciplina](https://img.shields.io/badge/Disciplina-Matem%C3%A1tica-blue)
@@ -7,7 +7,7 @@
 ![VibeCoder](https://img.shields.io/badge/Desenvolvido%20com-Vibe%20Coding-ff69b4)
 
 > **Relatório Pedagógico e Guia do Educador**
-> Este documento apresenta a fundamentação teórica, os objetivos de aprendizagem e as instruções de uso do jogo educativo **Busão dos Bichos**.
+> Este documento apresenta a fundamentação teórica, os objetivos de aprendizagem e as instruções de uso do jogo educativo **Busão da Adição**.
 
 ---
 
