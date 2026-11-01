@@ -53,7 +53,6 @@
 
   .bus-door-panel-left { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
   .bus-door-panel-right { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-  
   .door-open .bus-door-panel-left { transform: translateX(-100%); }
   .door-open .bus-door-panel-right { transform: translateX(100%); }
 
@@ -103,21 +102,91 @@
   @keyframes pulseQuestion { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
   .pulse-q { animation: pulseQuestion 0.8s infinite ease-in-out; }
 
-  /* ANIMAÇÃO DO BOTÃO PRÓXIMA VIAGEM */
   @keyframes pulseNextStop {
-    0%, 100% {
-      transform: scale(1);
-      box-shadow: 0 4px 0 #1e293b;
-      background-color: #fbbf24; /* amber-400 */
-    }
-    50% {
-      transform: scale(1.03);
-      box-shadow: 0 6px 0 #1e293b, 0 0 20px rgba(251, 191, 36, 0.8);
-      background-color: #fde047; /* yellow-300 */
+    0%, 100% { transform: scale(1); box-shadow: 0 4px 0 #1e293b; background-color: #fbbf24; }
+    50% { transform: scale(1.03); box-shadow: 0 6px 0 #1e293b, 0 0 20px rgba(251, 191, 36, 0.8); background-color: #fde047; }
+  }
+  .next-stop-blink { animation: pulseNextStop 1.2s infinite ease-in-out; }
+
+  /* ============================================================
+     LAYOUT EXCLUSIVO PARA O CENÁRIO 4 (ÔNIBUS EMPILHADOS AJUSTADOS)
+     ============================================================ */
+  .bus-comp-layout {
+    width: 94% !important;
+    max-width: 540px !important;
+    height: 105px !important; /* Aumentado para dar espaço à tarja */
+    transition: left 0.6s ease, top 0.6s ease, bottom 0.6s ease, transform 0.6s ease;
+  }
+  @media (min-width: 768px) {
+    .bus-comp-layout { height: 125px !important; max-width: 620px !important; }
+  }
+
+  /* Posições mais próximas para telas de celular */
+  #busContainer.bus-comp-bottom {
+    bottom: 8% !important;
+    top: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+  #busContainer2.bus-comp-top {
+    top: 10% !important;
+    bottom: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .bus-comp-layout .window-seat { height: 42px; margin-top: 4px; }
+  @media (min-width: 768px) { .bus-comp-layout .window-seat { height: 52px; margin-top: 6px; } }
+  
+  .bus-comp-layout .animal-in-seat { font-size: 1.1rem; }
+  @media (min-width: 768px) { .bus-comp-layout .animal-in-seat { font-size: 1.6rem; } }
+  
+  .bus-comp-layout .absolute.-bottom-4, .bus-comp-layout .absolute.-bottom-5 {
+    bottom: -12px; 
+    width: 26px; height: 26px;
+  }
+  @media (min-width: 768px) {
+    .bus-comp-layout .absolute.-bottom-4, .bus-comp-layout .absolute.-bottom-5 {
+      width: 34px; height: 34px;
+      bottom: -16px;
     }
   }
-  .next-stop-blink {
-    animation: pulseNextStop 1.2s infinite ease-in-out;
+
+  .comp-tag-inside {
+    position: absolute;
+    bottom: 4px; 
+    left: 8px;
+    right: 8px;
+    top: 50px; /* Ajustado para ficar no meio do vão livre */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #000000 !important;
+    background-color: transparent !important;
+    border: none !important;
+    text-shadow: none !important;
+    z-index: 50;
+    pointer-events: none;
+  }
+  @media (min-width: 768px) { .comp-tag-inside { font-size: 2rem; top: 60px; } }
+
+  /* Pista (Asfalto) para o ônibus de cima */
+  #topRoad {
+    position: absolute;
+    top: calc(10% + 105px); /* Alinhado com a altura do ônibus de cima */
+    left: 0;
+    width: 100%;
+    height: 18px;
+    background-color: #334155;
+    border-top: 3px solid #1e293b;
+    border-bottom: 3px solid #1e293b;
+    z-index: 10;
+    display: none;
+  }
+  @media (min-width: 768px) {
+    #topRoad { top: calc(10% + 125px); height: 24px; }
   }
 </style>
 </head>
@@ -162,7 +231,7 @@
     </div>
 
     <!-- Ponto de Ônibus -->
-    <div class="absolute left-1/2 -translate-x-1/2 bottom-[30%] flex flex-col items-center z-10">
+    <div id="busStop" class="absolute left-1/2 -translate-x-1/2 bottom-[30%] flex flex-col items-center z-10">
       <div class="bg-rose-500 border-2 border-white text-white font-extrabold text-[10px] md:text-xs px-2.5 py-1 rounded-full shadow-md uppercase tracking-wider flex items-center gap-1">
         <span>🚏</span> PONTO
       </div>
@@ -170,13 +239,16 @@
       <div class="w-24 md:w-36 h-2 md:h-3 bg-stone-300 border border-slate-600 rounded-full shadow-md"></div>
     </div>
 
-    <!-- Ônibus -->
+    <!-- Pista extra temporária para o ônibus de cima -->
+    <div id="topRoad"></div>
+
+    <!-- Ônibus 1 (Verde - Fica embaixo no cenário 4) -->
     <div id="busContainer" class="absolute bottom-[12%] w-[92%] max-w-[580px] h-[130px] md:h-[160px] z-30 transition-all duration-300">
       <div class="absolute -top-8 md:-top-10 left-1/2 -translate-x-1/2 hidden" id="mysteryBadge">
         <div class="bg-purple-600 text-white font-black px-4 md:px-5 py-1 rounded-xl border-3 border-slate-800 shadow-lg text-xl md:text-2xl pulse-q">❓</div>
       </div>
 
-      <div id="busBody" class="relative w-full h-full bg-emerald-800 border-4 border-slate-900 rounded-t-3xl rounded-b-xl shadow-[inset_0_-10px_0_#064e3b] p-2 md:p-3 flex gap-1.5 md:gap-2 items-center">
+      <div id="busBody" class="relative w-full h-full bg-emerald-600 border-4 border-slate-900 rounded-t-3xl rounded-b-xl shadow-[inset_0_-10px_0_#064e3b] p-2 md:p-3 flex gap-1.5 md:gap-2 items-center overflow-hidden">
         <div class="absolute right-0 bottom-4 md:bottom-5 w-2 md:w-3 h-6 md:h-8 bg-yellow-200 border-2 border-slate-900 rounded-r-md shadow-[0_0_8px_#fef08a]"></div>
 
         <div id="doorFrame" class="absolute right-[12%] bottom-0 w-[9%] h-[85%] bg-slate-900 border-t-2 border-x-2 border-slate-950 rounded-t-lg z-40 overflow-hidden flex shadow-inner">
@@ -194,7 +266,7 @@
           <div class="w-full h-full bg-yellow-400 border-t border-slate-600"></div>
         </div>
 
-        <div class="w-full h-[60%] md:h-[85px] grid grid-cols-10 gap-1 md:gap-1.5 pr-[24%] pl-1 md:pl-2">
+        <div id="seats1Grid" class="w-full h-[60%] md:h-[85px] grid grid-cols-10 gap-1 md:gap-1.5 pr-[24%] pl-1 md:pl-2 z-10">
           <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span class="text-[7px] md:text-[9px] font-extrabold text-white/20 absolute top-0.5 left-1 hidden md:block">1</span><span id="seat0" class="animal-in-seat text-lg md:text-3xl"></span></div>
           <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span class="text-[7px] md:text-[9px] font-extrabold text-white/20 absolute top-0.5 left-1 hidden md:block">2</span><span id="seat1" class="animal-in-seat text-lg md:text-3xl"></span></div>
           <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span class="text-[7px] md:text-[9px] font-extrabold text-white/20 absolute top-0.5 left-1 hidden md:block">3</span><span id="seat2" class="animal-in-seat text-lg md:text-3xl"></span></div>
@@ -207,6 +279,9 @@
           <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span class="text-[7px] md:text-[9px] font-extrabold text-white/20 absolute top-0.5 left-1 hidden md:block">10</span><span id="seat9" class="animal-in-seat text-lg md:text-3xl"></span></div>
         </div>
 
+        <!-- Tarja de Comparação para o Ônibus 1 (Verde) -->
+        <div id="compTag1" class="comp-tag-inside hidden">X a mais</div>
+
         <div class="absolute -bottom-4 md:-bottom-5 left-[10%] w-10 h-10 md:w-12 md:h-12 bg-slate-900 border-4 border-slate-800 rounded-full flex items-center justify-center shadow-lg z-50">
           <div id="wheel1" class="w-3 h-3 md:w-4 md:h-4 bg-slate-300 rounded-full border border-slate-800"></div>
         </div>
@@ -216,7 +291,49 @@
       </div>
     </div>
 
-    <div id="walkStage" class="absolute inset-0 pointer-events-none z-50"></div>
+    <!-- Ônibus 2 (Amarelo - Fica em cima no cenário 4) -->
+    <div id="busContainer2" class="absolute bottom-[12%] w-[92%] max-w-[580px] h-[130px] md:h-[160px] z-30 transition-all duration-300 hidden">
+      
+      <div id="busBody2" class="relative w-full h-full bg-amber-400 border-4 border-amber-900 rounded-t-3xl rounded-b-xl shadow-[inset_0_-10px_0_#b45309] p-2 md:p-3 flex gap-1.5 md:gap-2 items-center overflow-hidden">
+        <div class="absolute right-0 bottom-4 md:bottom-5 w-2 md:w-3 h-6 md:h-8 bg-yellow-100 border-2 border-amber-900 rounded-r-md shadow-[0_0_8px_#fef08a]"></div>
+
+        <div class="absolute right-[12%] bottom-0 w-[9%] h-[85%] bg-slate-900 border-t-2 border-x-2 border-slate-950 rounded-t-lg z-40 overflow-hidden flex shadow-inner">
+          <div class="w-1/2 h-full bg-amber-100 border-r border-slate-900 p-0.5 flex flex-col justify-between">
+            <div class="w-full h-1/2 bg-amber-50 border border-slate-400 rounded-sm"></div>
+            <div class="w-full h-1/3 bg-slate-300 rounded-sm"></div>
+          </div>
+          <div class="w-1/2 h-full bg-amber-100 border-l border-slate-900 p-0.5 flex flex-col justify-between">
+            <div class="w-full h-1/2 bg-amber-50 border border-slate-400 rounded-sm"></div>
+            <div class="w-full h-1/3 bg-slate-300 rounded-sm"></div>
+          </div>
+        </div>
+
+        <div class="w-full h-[60%] md:h-[85px] grid grid-cols-10 gap-1 md:gap-1.5 pr-[24%] pl-1 md:pl-2 z-10">
+          <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span id="seat2_0" class="animal-in-seat text-lg md:text-3xl"></span></div>
+          <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span id="seat2_1" class="animal-in-seat text-lg md:text-3xl"></span></div>
+          <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span id="seat2_2" class="animal-in-seat text-lg md:text-3xl"></span></div>
+          <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span id="seat2_3" class="animal-in-seat text-lg md:text-3xl"></span></div>
+          <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span id="seat2_4" class="animal-in-seat text-lg md:text-3xl"></span></div>
+          <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span id="seat2_5" class="animal-in-seat text-lg md:text-3xl"></span></div>
+          <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span id="seat2_6" class="animal-in-seat text-lg md:text-3xl"></span></div>
+          <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span id="seat2_7" class="animal-in-seat text-lg md:text-3xl"></span></div>
+          <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span id="seat2_8" class="animal-in-seat text-lg md:text-3xl"></span></div>
+          <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span id="seat2_9" class="animal-in-seat text-lg md:text-3xl"></span></div>
+        </div>
+
+        <!-- Tarja de Comparação para o Ônibus 2 (Amarelo) -->
+        <div id="compTag2" class="comp-tag-inside hidden">X a mais</div>
+
+        <div class="absolute -bottom-4 md:-bottom-5 left-[10%] w-10 h-10 md:w-12 md:h-12 bg-slate-900 border-4 border-slate-800 rounded-full flex items-center justify-center shadow-lg z-50">
+          <div class="w-3 h-3 md:w-4 md:h-4 bg-slate-300 rounded-full border border-slate-800"></div>
+        </div>
+        <div class="absolute -bottom-4 md:-bottom-5 right-[15%] w-10 h-10 md:w-12 md:h-12 bg-slate-900 border-4 border-slate-800 rounded-full flex items-center justify-center shadow-lg z-50">
+          <div class="w-3 h-3 md:w-4 md:h-4 bg-slate-300 rounded-full border border-slate-800"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="walkStage" class="absolute inset-0 w-full h-full pointer-events-none z-50 overflow-hidden"></div>
 
     <div class="absolute bottom-0 left-0 right-0 h-[28px] md:h-[38px] bg-slate-700 border-t-4 border-slate-800 flex items-center justify-around">
       <div class="absolute -top-[8px] md:-top-[10px] left-0 right-0 h-[8px] md:h-[10px] bg-stone-300 border-t-2 border-slate-600"></div>
@@ -230,7 +347,6 @@
 
   <!-- Footer -->
   <footer class="w-full max-w-4xl bg-white/95 backdrop-blur border-4 border-slate-800 rounded-2xl p-2 md:p-3 shadow-xl flex flex-col gap-2 z-10 shrink-0">
-    <!-- Status com Fonte Maior -->
     <div class="bg-sky-50 border-2 border-sky-300 rounded-lg md:rounded-xl p-2 md:p-3 text-center flex items-center justify-center gap-2 min-h-[48px] md:min-h-[56px]">
       <span id="statusIcon" class="text-2xl md:text-3xl animate-bounce">📢</span>
       <p id="statusMsg" class="font-bold text-sm md:text-xl text-slate-800 leading-tight">
@@ -238,9 +354,7 @@
       </p>
     </div>
 
-    <!-- Botão Próxima Parada (Oculto por padrão) -->
     <div id="nextStopArea" class="hidden">
-      <!-- Adicionada a classe next-stop-blink aqui -->
       <button id="nextStopBtn" class="next-stop-blink w-full bg-amber-400 hover:bg-amber-300 text-slate-900 font-black text-lg md:text-2xl py-3 md:py-4 rounded-xl border-3 border-slate-800 shadow-[0_4px_0_#1e293b] active:translate-y-1 active:shadow-none transition-all uppercase tracking-wider">
         Próxima Viagem 🚀
       </button>
@@ -259,7 +373,7 @@
       <h2 class="text-2xl md:text-3xl font-black">Busão dos Bichos!</h2>
       <div class="text-sm md:text-base font-semibold text-slate-700 flex flex-col gap-3 text-left bg-sky-50 p-4 md:p-5 rounded-2xl border-2 border-sky-200">
         <p>🎯 <strong>10 desafios</strong> de adição e subtração!</p>
-        <p>🔍 Às vezes você vai descobrir <strong>quantos ficaram</strong>, às vezes <strong>quantos havia no início</strong>, às vezes <strong>quantos entraram ou saíram</strong>.</p>
+        <p>🔍 Descubra quantos ficaram, quantos havia, ou compare dois ônibus!</p>
         <p>👀 Preste atenção e escolha a <strong>resposta certa</strong> entre as opções!</p>
         <p>💡 Acertos de primeira valem mais pontos!</p>
         <p>💡 <strong>Ver a conta ganha menos pontos!</strong></p>
@@ -272,11 +386,12 @@
 
   <div id="endModal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white border-4 border-slate-800 rounded-3xl p-5 md:p-8 max-w-md w-full text-center shadow-2xl flex flex-col items-center gap-4 my-auto">
-      <div class="text-6xl md:text-7xl">🏆</div>
+      <div id="medalIcon" class="text-6xl md:text-7xl">🏆</div>
       <h2 class="text-2xl md:text-3xl font-black">Você completou os 10 desafios!</h2>
       <div class="bg-amber-100 border-2 border-amber-500 rounded-2xl p-4 md:p-5 w-full">
         <div class="text-sm md:text-base font-bold text-amber-700">PONTUAÇÃO FINAL</div>
-        <div class="text-4xl md:text-5xl font-black text-amber-900"><span id="finalScore">0</span> ⭐</div>
+        <div class="text-4xl md:text-5xl font-black text-amber-900"><span id="finalScore">0</span> / 100 ⭐</div>
+        <div id="medalTitle" class="text-lg md:text-xl font-black mt-2 text-amber-800"></div>
       </div>
       <div id="finalStats" class="text-sm md:text-base font-semibold text-slate-600"></div>
       <button id="playAgainBtn" class="w-full bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-black text-lg md:text-xl py-3 md:py-4 rounded-xl border-3 border-slate-800 shadow-[0_4px_0_#1e293b] active:translate-y-1 active:shadow-none transition-all mt-2">
@@ -348,17 +463,18 @@
     return arr;
   };
 
+  // PLANEJAMENTO DAS FASES CONFORME SOLICITADO
   const QUESTION_PLAN = [
-    { scenario: 1, diff: 'easy',   transform: 'single' },
-    { scenario: 1, diff: 'easy',   transform: 'single' },
-    { scenario: 1, diff: 'easy',   transform: 'single' },
-    { scenario: 3, diff: 'easy',   transform: 'single' },
-    { scenario: 1, diff: 'medium', transform: 'both'   },
-    { scenario: 3, diff: 'medium', transform: 'single' },
-    { scenario: 2, diff: 'medium', transform: 'single' },
-    { scenario: 2, diff: 'medium', transform: 'both'   },
-    { scenario: 'mix', diff: 'hard', transform: 'both' },
-    { scenario: 'mix', diff: 'hard', transform: 'both' }
+    { scenario: 1, diff: 'easy',   transform: 'single' }, // Q1: 1 ônibus
+    { scenario: 3, diff: 'easy',   transform: 'single' }, // Q2: 1 ônibus
+    { scenario: 2, diff: 'easy',   transform: 'single' }, // Q3: 1 ônibus
+    { scenario: 1, diff: 'medium', transform: 'single' }, // Q4: 1 ônibus
+    { scenario: 3, diff: 'medium', transform: 'single' }, // Q5: 1 ônibus
+    { scenario: 4, diff: 'medium'                        }, // Q6: 2 ônibus
+    { scenario: 4, diff: 'medium'                        }, // Q7: 2 ônibus
+    { scenario: 4, diff: 'hard'                          }, // Q8: 2 ônibus
+    { scenario: 1, diff: 'hard',   transform: 'both'   }, // Q9: 1 ônibus, entra e sai
+    { scenario: 1, diff: 'hard',   transform: 'both'   }  // Q10: 1 ônibus, entra e sai
   ];
 
   function getRanges(diff) {
@@ -380,8 +496,8 @@
   let roundAttempts = 0;
   let optionsLocked = false;
   let currentPassengers = [];
-  
-  // Estado da Conta e Próxima Parada
+  let currentPassengers2 = [];
+
   let equationRevealed = false;
   let isNextStopPending = false;
 
@@ -390,12 +506,18 @@
   // ============================================================
   const gameStage = document.getElementById("gameStage");
   const busContainer = document.getElementById("busContainer");
+  const busContainer2 = document.getElementById("busContainer2");
   const doorFrame = document.getElementById("doorFrame");
   const busRampContainer = document.getElementById("busRampContainer");
   const walkStage = document.getElementById("walkStage");
   const wheel1 = document.getElementById("wheel1");
   const wheel2 = document.getElementById("wheel2");
   const mysteryBadge = document.getElementById("mysteryBadge");
+  
+  const compTag1 = document.getElementById("compTag1");
+  const compTag2 = document.getElementById("compTag2");
+  const busStop = document.getElementById("busStop");
+  const topRoad = document.getElementById("topRoad");
 
   const statusMsg = document.getElementById("statusMsg");
   const statusIcon = document.getElementById("statusIcon");
@@ -426,6 +548,7 @@
 
   function setDriving(on) {
     busContainer.classList.toggle("bus-driving", on);
+    busContainer2.classList.toggle("bus-driving", on);
     wheel1.classList.toggle("spinning-wheel", on);
     wheel2.classList.toggle("spinning-wheel", on);
   }
@@ -438,8 +561,16 @@
     }
   }
 
-  function setWindowsRevealed(v) {
-    document.querySelectorAll(".window-seat").forEach(s => s.classList.toggle("revealed", v));
+  function renderSeats2(arr) {
+    for (let i = 0; i < 10; i++) {
+      const el = document.getElementById(`seat2_${i}`);
+      el.textContent = arr[i] || "";
+    }
+  }
+
+  function setWindowsRevealed(v, busId = 1) {
+    const sel = busId === 1 ? "#busContainer .window-seat" : "#busContainer2 .window-seat";
+    document.querySelectorAll(sel).forEach(s => s.classList.toggle("revealed", v));
   }
 
   function setDoorOpen(v) {
@@ -451,7 +582,7 @@
     return (gameStage.clientWidth - busContainer.offsetWidth) / 2;
   }
   function getOffscreenLeft() {
-    return -busContainer.offsetWidth - 50;
+    return -gameStage.clientWidth - 50;
   }
   function getOffscreenRight() {
     return gameStage.clientWidth + 50;
@@ -499,7 +630,9 @@
   // ============================================================
   function getEquationString(q) {
     let str = "";
-    if (q.scenario === 1) {
+    if (q.scenario === 4) {
+      str = `${q.knownCount} ${q.isMore ? '+' : '−'} ${q.diffVal} = ?`;
+    } else if (q.scenario === 1) {
       str = `${q.initial}`;
       if (q.leave > 0) str += ` − ${q.leave}`;
       if (q.board > 0) str += ` + ${q.board}`;
@@ -510,11 +643,8 @@
       if (q.board > 0) str += `+ ${q.board} `;
       str += `= ${q.final}`;
     } else if (q.scenario === 3) {
-      if (q.ask === 'leave') {
-        str = `${q.initial} − ? = ${q.final}`;
-      } else {
-        str = `${q.initial} + ? = ${q.final}`;
-      }
+      if (q.ask === 'leave') str = `${q.initial} − ? = ${q.final}`;
+      else str = `${q.initial} + ? = ${q.final}`;
     }
     return str;
   }
@@ -533,7 +663,7 @@
     equationRevealed = true;
     eqPanel.textContent = getEquationString(currentQuestion);
     eqPanel.classList.remove("hidden");
-    showEqBtn.textContent = "Conta Visível (-5 pts)";
+    showEqBtn.textContent = "Conta Visível (-3 pts)";
     showEqBtn.disabled = true;
     showEqBtn.classList.add("opacity-50", "cursor-not-allowed");
   });
@@ -548,11 +678,8 @@
 
     if (transform === 'single') {
       const dir = Math.random() < 0.5 ? 'leave' : 'board';
-      if (dir === 'leave') {
-        leave = rand(r.trans[0], Math.min(r.trans[1], initial - 1));
-      } else {
-        board = rand(r.trans[0], Math.min(r.trans[1], MAX_CAPACITY - initial));
-      }
+      if (dir === 'leave') leave = rand(r.trans[0], Math.min(r.trans[1], initial - 1));
+      else board = rand(r.trans[0], Math.min(r.trans[1], MAX_CAPACITY - initial));
     } else {
       leave = rand(r.trans[0], Math.min(r.trans[1], initial - 1));
       const maxBoard = MAX_CAPACITY - (initial - leave);
@@ -576,17 +703,11 @@
       if (transform === 'single') {
         const dir = Math.random() < 0.5 ? 'leave' : 'board';
         if (dir === 'leave') {
-          if (initial - 1 >= r.trans[0]) {
-            leave = rand(r.trans[0], Math.min(r.trans[1], initial - 1));
-          } else {
-            board = rand(r.trans[0], Math.min(r.trans[1], MAX_CAPACITY - initial));
-          }
+          if (initial - 1 >= r.trans[0]) leave = rand(r.trans[0], Math.min(r.trans[1], initial - 1));
+          else board = rand(r.trans[0], Math.min(r.trans[1], MAX_CAPACITY - initial));
         } else {
-          if (MAX_CAPACITY - initial >= r.trans[0]) {
-            board = rand(r.trans[0], Math.min(r.trans[1], MAX_CAPACITY - initial));
-          } else {
-            leave = rand(r.trans[0], Math.min(r.trans[1], initial - 1));
-          }
+          if (MAX_CAPACITY - initial >= r.trans[0]) board = rand(r.trans[0], Math.min(r.trans[1], MAX_CAPACITY - initial));
+          else leave = rand(r.trans[0], Math.min(r.trans[1], initial - 1));
         }
       } else {
         leave = rand(r.trans[0], Math.min(r.trans[1], initial - 1));
@@ -624,18 +745,40 @@
     } while ((leave === 0 && board === 0) && safety < 30);
 
     const answer = direction === 'leave' ? leave : board;
-    return { scenario: 3, initial, leave, board, final, ask: direction, answer, askLabel: direction === 'leave' ? 'saíram' : 'entraram' };
+    return { scenario: 3, initial, leave, board, final, ask: direction, answer };
+  }
+
+  function generateScenario4(diff) {
+    const knownCount = rand(3, 7);
+    const isMore = Math.random() < 0.5;
+    const diffVal = rand(1, 3);
+    let hiddenCount = isMore ? knownCount + diffVal : knownCount - diffVal;
+    
+    if (hiddenCount < 1) hiddenCount = knownCount + diffVal;
+    if (hiddenCount > 10) hiddenCount = knownCount - diffVal;
+
+    const revealWhich = Math.random() < 0.5 ? 'green' : 'yellow';
+    const askWhich = revealWhich === 'green' ? 'yellow' : 'green';
+    
+    return {
+      scenario: 4,
+      knownCount,
+      hiddenCount,
+      diffVal,
+      isMore,
+      revealWhich, 
+      askWhich,
+      ask: 'count',
+      answer: hiddenCount
+    };
   }
 
   function generateQuestion() {
     const plan = QUESTION_PLAN[questionNumber - 1];
     let scenario = plan.scenario;
-    if (scenario === 'mix') {
-      const pool = [1, 2, 3];
-      scenario = pool[Math.floor(Math.random() * pool.length)];
-    }
     if (scenario === 1) return generateScenario1(plan.diff, plan.transform);
     if (scenario === 2) return generateScenario2(plan.diff, plan.transform);
+    if (scenario === 4) return generateScenario4(plan.diff);
     return generateScenario3(plan.diff, plan.transform);
   }
 
@@ -654,15 +797,17 @@
       return true;
     }
 
-    if (q.scenario === 1) {
+    if (q.scenario === 4) {
+      addIfValid(q.isMore ? q.knownCount - q.diffVal : q.knownCount + q.diffVal); 
+      addIfValid(q.knownCount); 
+      addIfValid(correct + 1);
+      addIfValid(correct - 1);
+    } else if (q.scenario === 1) {
       if (q.leave > 0 && q.board > 0) {
         addIfValid(q.initial + q.leave + q.board);
         addIfValid(q.initial - q.leave - q.board);
-      } else if (q.leave > 0) {
-        addIfValid(q.initial + q.leave);
-      } else {
-        addIfValid(q.initial - q.board);
-      }
+      } else if (q.leave > 0) addIfValid(q.initial + q.leave);
+      else addIfValid(q.initial - q.board);
       addIfValid(q.initial);
       addIfValid(correct + 1);
       addIfValid(correct - 1);
@@ -670,11 +815,8 @@
       if (q.leave > 0 && q.board > 0) {
         addIfValid(q.final + q.board - q.leave);
         addIfValid(q.final - q.board - q.leave);
-      } else if (q.leave > 0) {
-        addIfValid(q.final - q.leave);
-      } else {
-        addIfValid(q.final + q.board);
-      }
+      } else if (q.leave > 0) addIfValid(q.final - q.leave);
+      else addIfValid(q.final + q.board);
       addIfValid(q.final);
       addIfValid(correct + 1);
       addIfValid(correct - 1);
@@ -708,30 +850,61 @@
   }
 
   function getHint(q) {
+    if (q.scenario === 4) {
+      const busHiddenName = q.askWhich === 'green' ? 'verde' : 'amarelo';
+      const busKnownName = q.revealWhich === 'green' ? 'verde' : 'amarelo';
+      const op = q.isMore ? 'mais' : 'menos';
+      const mathOp = q.isMore ? '+' : '−';
+      return `O busão ${busKnownName} tem ${q.knownCount}. O ${busHiddenName} tem ${q.diffVal} a ${op}. Faça: ${q.knownCount} ${mathOp} ${q.diffVal} = ${q.hiddenCount}.`;
+    }
     if (q.scenario === 1) {
-      if (q.leave > 0 && q.board > 0)
-        return `Havia ${q.initial}. Saíram ${q.leave} (subtrai). Entraram ${q.board} (soma). Faça: ${q.initial} − ${q.leave} + ${q.board} = ${q.final}.`;
-      if (q.leave > 0)
-        return `Havia ${q.initial} e saíram ${q.leave}. Quem sai, subtrai: ${q.initial} − ${q.leave} = ${q.final}.`;
+      if (q.leave > 0 && q.board > 0) return `Havia ${q.initial}. Saíram ${q.leave} (subtrai). Entraram ${q.board} (soma). Faça: ${q.initial} − ${q.leave} + ${q.board} = ${q.final}.`;
+      if (q.leave > 0) return `Havia ${q.initial} e saíram ${q.leave}. Quem sai, subtrai: ${q.initial} − ${q.leave} = ${q.final}.`;
       return `Havia ${q.initial} e entraram ${q.board}. Quem entra, soma: ${q.initial} + ${q.board} = ${q.final}.`;
     }
     if (q.scenario === 2) {
-      if (q.leave > 0 && q.board > 0)
-        return `Agora há ${q.final}. Para descobrir o início, desfaça: ${q.final} − ${q.board} + ${q.leave} = ${q.initial}.`;
-      if (q.leave > 0)
-        return `Agora há ${q.final} e ${q.leave} saíram. Para descobrir o início, some de volta: ${q.final} + ${q.leave} = ${q.initial}.`;
+      if (q.leave > 0 && q.board > 0) return `Agora há ${q.final}. Para descobrir o início, desfaça: ${q.final} − ${q.board} + ${q.leave} = ${q.initial}.`;
+      if (q.leave > 0) return `Agora há ${q.final} e ${q.leave} saíram. Para descobrir o início, some de volta: ${q.final} + ${q.leave} = ${q.initial}.`;
       return `Agora há ${q.final} e ${q.board} entraram. Para descobrir o início, subtraia: ${q.final} − ${q.board} = ${q.initial}.`;
     }
     const diff = Math.abs(q.final - q.initial);
-    if (q.ask === 'leave')
-      return `Havia ${q.initial} e agora há ${q.final}. Quem saiu é a diferença: ${q.initial} − ${q.final} = ${diff}.`;
+    if (q.ask === 'leave') return `Havia ${q.initial} e agora há ${q.final}. Quem saiu é a diferença: ${q.initial} − ${q.final} = ${diff}.`;
     return `Havia ${q.initial} e agora há ${q.final}. Quem entrou é a diferença: ${q.final} − ${q.initial} = ${diff}.`;
   }
 
   function getPrompt(q) {
+    if (q.scenario === 4) {
+      return `Quantos animais estão no busão ${q.askWhich === 'green' ? 'verde' : 'amarelo'}?`;
+    }
     if (q.scenario === 1) return "Quantos animais ficaram no busão?";
     if (q.scenario === 2) return "Quantos animais havia no início?";
     return q.ask === 'leave' ? "Quantos animais saíram?" : "Quantos animais entraram?";
+  }
+
+  // ============================================================
+  // RESET DE LAYOUT
+  // ============================================================
+  function resetBusLayout() {
+    busContainer.className = "absolute bottom-[12%] w-[92%] max-w-[580px] h-[130px] md:h-[160px] z-30 transition-all duration-300";
+    busContainer2.className = "absolute bottom-[12%] w-[92%] max-w-[580px] h-[130px] md:h-[160px] z-30 transition-all duration-300 hidden";
+    
+    busContainer.style.transform = "none";
+    busContainer2.style.transform = "none";
+    busContainer.style.top = "auto";
+    busContainer2.style.top = "auto";
+    busContainer.style.bottom = "12%";
+    busContainer2.style.bottom = "12%";
+    busContainer.style.left = `${getOffscreenLeft()}px`;
+    busContainer2.style.left = `${getOffscreenLeft()}px`;
+    
+    compTag1.classList.add("hidden");
+    compTag2.classList.add("hidden");
+    
+    setWindowsRevealed(false, 1);
+    setWindowsRevealed(false, 2);
+    
+    busStop.style.opacity = "1";
+    topRoad.style.display = "none";
   }
 
   // ============================================================
@@ -743,106 +916,181 @@
 
     walkStage.innerHTML = "";
     setDoorOpen(false);
-    setWindowsRevealed(false);
     mysteryBadge.classList.add("hidden");
     optionsArea.classList.add("hidden");
     nextStopArea.classList.add("hidden");
     eqToggleContainer.classList.add("hidden");
     resetEquationPanel();
+    resetBusLayout();
 
-    currentPassengers = Array(q.initial).fill(null).map(() => getRandomAnimal());
-    renderSeats();
-
-    busContainer.style.transition = "none";
-    busContainer.style.left = `${getOffscreenLeft()}px`;
-
-    if (q.scenario === 2) {
-      statusIcon.textContent = "🚌";
-      statusMsg.textContent = "O busão chegou... mas não sabemos quantos estão dentro!";
-      SoundManager.play('busArriving');
-
-      await moveBus(15, 1200);
-      if (myToken !== gameToken) return;
-      await sleep(800);
-      if (myToken !== gameToken) return;
-
-      statusIcon.textContent = "🏣";
-      statusMsg.textContent = "Indo para o Ponto de Embarque...";
-      await moveBus(getCenterLeft(), 1400);
-      if (myToken !== gameToken) return;
-      
-      SoundManager.play('busAtDestination');
-      setDoorOpen(true);
-      await sleep(600);
-      if (myToken !== gameToken) return;
-
-      await performTransformations(q, myToken);
-      if (myToken !== gameToken) return;
-
-      setDoorOpen(false);
-      await sleep(500);
-      if (myToken !== gameToken) return;
-
-      setWindowsRevealed(true);
-      renderSeats();
-      statusIcon.textContent = "👀";
-      statusMsg.textContent = `Agora há ${q.final} animais no busão!`;
-      await sleep(2200);
-      if (myToken !== gameToken) return;
-
-      showOptions(q);
-
+    if (q.scenario === 4) {
+      await runComparisonScenario(q, myToken);
     } else {
-      statusIcon.textContent = "🚌";
-      statusMsg.textContent = "O busão está chegando!";
-      SoundManager.play('busArriving');
+      currentPassengers = Array(q.initial).fill(null).map(() => getRandomAnimal());
+      renderSeats();
 
-      await moveBus(15, 1200);
-      if (myToken !== gameToken) return;
+      if (q.scenario === 2) {
+        statusIcon.textContent = "🚌";
+        statusMsg.textContent = "O busão chegou... mas não sabemos quantos estão dentro!";
+        SoundManager.play('busArriving');
 
-      statusIcon.textContent = "👀";
-      statusMsg.textContent = "Memorize quem está a bordo!";
-      setWindowsRevealed(true);
-      renderSeats(true);
-      await sleep(5000);
-      if (myToken !== gameToken) return;
+        await moveBus(15, 1200);
+        if (myToken !== gameToken) return;
+        await sleep(800);
+        if (myToken !== gameToken) return;
 
-      renderSeats(false);
-      setWindowsRevealed(false);
-      statusIcon.textContent = "🏣";
-      statusMsg.textContent = `Havia ${q.initial} animais no início. Indo...`;
-      await moveBus(getCenterLeft(), 1400);
-      if (myToken !== gameToken) return;
-      
-      SoundManager.play('busAtDestination');
-      setDoorOpen(true);
-      await sleep(600);
-      if (myToken !== gameToken) return;
+        statusIcon.textContent = "🏣";
+        statusMsg.textContent = "Indo para o Ponto...";
+        await moveBus(getCenterLeft(), 1400);
+        if (myToken !== gameToken) return;
+        
+        SoundManager.play('busAtDestination');
+        setDoorOpen(true);
+        await sleep(600);
+        if (myToken !== gameToken) return;
 
-      if (q.scenario === 1) {
         await performTransformations(q, myToken);
-      } else {
-        await performMysteryTransformation(q, myToken);
-      }
-      if (myToken !== gameToken) return;
+        if (myToken !== gameToken) return;
 
-      setDoorOpen(false);
-      await sleep(500);
-      if (myToken !== gameToken) return;
+        setDoorOpen(false);
+        await sleep(500);
+        if (myToken !== gameToken) return;
 
-      if (q.scenario === 3) {
-        setWindowsRevealed(true);
+        setWindowsRevealed(true, 1);
         renderSeats();
         statusIcon.textContent = "👀";
         statusMsg.textContent = `Agora há ${q.final} animais no busão!`;
         await sleep(2200);
         if (myToken !== gameToken) return;
-      }
 
-      showOptions(q);
+        showOptions(q);
+
+      } else {
+        statusIcon.textContent = "🚌";
+        statusMsg.textContent = "O busão está chegando!";
+        SoundManager.play('busArriving');
+
+        await moveBus(15, 1200);
+        if (myToken !== gameToken) return;
+
+        statusIcon.textContent = "👀";
+        statusMsg.textContent = "Memorize quem está a bordo!";
+        setWindowsRevealed(true, 1);
+        renderSeats(true);
+        await sleep(5000);
+        if (myToken !== gameToken) return;
+
+        renderSeats(false);
+        setWindowsRevealed(false, 1);
+        statusIcon.textContent = "🏣";
+        statusMsg.textContent = `Havia ${q.initial} animais no início. Indo...`;
+        await moveBus(getCenterLeft(), 1400);
+        if (myToken !== gameToken) return;
+        
+        SoundManager.play('busAtDestination');
+        setDoorOpen(true);
+        await sleep(600);
+        if (myToken !== gameToken) return;
+
+        if (q.scenario === 1) await performTransformations(q, myToken);
+        else await performMysteryTransformation(q, myToken);
+        
+        if (myToken !== gameToken) return;
+
+        setDoorOpen(false);
+        await sleep(500);
+        if (myToken !== gameToken) return;
+
+        if (q.scenario === 3) {
+          setWindowsRevealed(true, 1);
+          renderSeats();
+          statusIcon.textContent = "👀";
+          statusMsg.textContent = `Agora há ${q.final} animais no busão!`;
+          await sleep(2200);
+          if (myToken !== gameToken) return;
+        }
+
+        showOptions(q);
+      }
     }
   }
 
+  // ============================================================
+  // CENÁRIO 4: COMPARAÇÃO QUANTIFICADA
+  // ============================================================
+  async function runComparisonScenario(q, myToken) {
+    busStop.style.opacity = "0";
+    topRoad.style.display = "block";
+    
+    busContainer.className = "bus-comp-layout absolute z-30 transition-all duration-300";
+    busContainer2.className = "bus-comp-layout absolute z-30 transition-all duration-300";
+    
+    busContainer2.classList.add("bus-comp-top");
+    busContainer.classList.add("bus-comp-bottom");
+    busContainer2.style.display = "block";
+    
+    currentPassengers = [];
+    currentPassengers2 = [];
+    
+    let greenCount, yellowCount;
+    if (q.revealWhich === 'green') {
+      greenCount = q.knownCount;
+      yellowCount = q.hiddenCount;
+    } else {
+      greenCount = q.hiddenCount;
+      yellowCount = q.knownCount;
+    }
+
+    for(let i=0; i<greenCount; i++) currentPassengers.push(getRandomAnimal());
+    for(let i=0; i<yellowCount; i++) currentPassengers2.push(getRandomAnimal());
+
+    renderSeats();
+    renderSeats2(currentPassengers2);
+
+    busContainer.style.left = `${getOffscreenLeft()}px`;
+    busContainer2.style.left = `${getOffscreenLeft()}px`;
+
+    statusIcon.textContent = "🚌";
+    statusMsg.textContent = "Dois ônibus chegando!";
+    SoundManager.play('busArriving');
+    
+    busContainer.style.transition = `left 1200ms cubic-bezier(0.25, 1, 0.5, 1)`;
+    busContainer2.style.transition = `left 1200ms cubic-bezier(0.25, 1, 0.5, 1)`;
+    
+    busContainer.style.left = "50%";
+    busContainer2.style.left = "50%";
+    
+    await sleep(1200);
+    if (myToken !== gameToken) return;
+    
+    SoundManager.play('busAtDestination');
+    await sleep(600);
+    if (myToken !== gameToken) return;
+
+    // CORREÇÃO B: Revela APENAS o ônibus visível
+    const revealedBusId = q.revealWhich === 'green' ? 1 : 2;
+    setWindowsRevealed(true, revealedBusId);
+    
+    // O ônibus oculto NÃO é revelado (janelas continuam pretas)
+    const hiddenBusId = q.revealWhich === 'green' ? 2 : 1;
+    setWindowsRevealed(false, hiddenBusId);
+    
+    const tagToUse = q.revealWhich === 'green' ? compTag2 : compTag1;
+    tagToUse.textContent = `${q.diffVal} a ${q.isMore ? 'mais' : 'menos'}`;
+    tagToUse.className = `comp-tag-inside ${q.isMore ? 'comp-tag-more' : 'comp-tag-less'}`;
+    tagToUse.classList.remove("hidden");
+
+    statusIcon.textContent = "👀";
+    statusMsg.textContent = "Um busão está visível, o outro tem uma pista!";
+    await sleep(2500);
+    if (myToken !== gameToken) return;
+
+    showOptions(q);
+  }
+
+  // ============================================================
+  // ANIMAÇÕES DE ANIMAIS (CENÁRIOS 1, 2, 3)
+  // ============================================================
   async function performTransformations(q, myToken) {
     const busRect = busContainer.getBoundingClientRect();
     const stageRect = gameStage.getBoundingClientRect();
@@ -990,7 +1238,6 @@
     optionsArea.classList.add("hidden");
     nextStopArea.classList.remove("hidden");
     eqToggleContainer.classList.add("hidden");
-    // Desabilita Replay após responder
     replayBtn.disabled = true; 
   }
 
@@ -1001,13 +1248,19 @@
     
     statusIcon.textContent = "🚀";
     statusMsg.textContent = "Próxima parada!";
-    moveBus(getOffscreenRight(), 1400).then(() => {
+    
+    busContainer.style.transition = `left 1400ms cubic-bezier(0.25, 1, 0.5, 1)`;
+    busContainer2.style.transition = `left 1400ms cubic-bezier(0.25, 1, 0.5, 1)`;
+    busContainer.style.left = `${getOffscreenRight()}px`;
+    busContainer2.style.left = `${getOffscreenRight()}px`;
+    
+    setTimeout(() => {
       advanceQuestion();
-    });
+    }, 1400);
   });
 
   // ============================================================
-  // CLIQUE EM OPÇÃO
+  // CLIQUE EM OPÇÃO (PONTUAÇÃO BASEADA EM 100 PONTOS MÁXIMO)
   // ============================================================
   function handleOptionClick(idx, q) {
     if (optionsLocked) return;
@@ -1022,13 +1275,12 @@
 
       if (roundAttempts === 0) firstTryCorrect++;
       
-      let points = roundAttempts === 0 ? 10 * questionNumber
-                 : roundAttempts === 1 ? 5 * questionNumber
-                 : 2 * questionNumber;
+      let points = roundAttempts === 0 ? 10
+                 : roundAttempts === 1 ? 5
+                 : 2;
                  
-      // Penalidade de -5 se a conta estiver à mostra
       if (equationRevealed) {
-        points = Math.max(0, points - 5);
+        points = Math.max(0, points - 3);
       }
 
       score += points;
@@ -1037,10 +1289,11 @@
       statusIcon.textContent = "🎉";
       statusMsg.textContent = `Isso! ${opt.hint}`;
 
-      setWindowsRevealed(true);
+      // CORREÇÃO B: Revela ambos os ônibus para mostrar a resposta certa
+      setWindowsRevealed(true, 1);
+      setWindowsRevealed(true, 2);
       renderSeats(true);
       
-      // Mostra o botão "Próxima Parada" após um tempo para ler o feedback
       setTimeout(() => {
         showNextStopButton();
       }, 2000);
@@ -1062,15 +1315,18 @@
           optionsLocked = true;
           
           setTimeout(() => {
-            let points = 2 * questionNumber;
-            if (equationRevealed) points = Math.max(0, points - 5);
+            let points = 2;
+            if (equationRevealed) points = 0;
             
             score += points;
             updateHUD();
             
             statusIcon.textContent = "💡";
             statusMsg.textContent = `A resposta era ${currentOptions[correctIdx].val}. ${currentOptions[correctIdx].hint}`;
-            setWindowsRevealed(true);
+            
+            // CORREÇÃO B: Revela ambos ao final
+            setWindowsRevealed(true, 1);
+            setWindowsRevealed(true, 2);
             renderSeats(true);
             
             setTimeout(() => {
@@ -1083,7 +1339,7 @@
   }
 
   // ============================================================
-  // AVANÇO DE QUESTÃO E FIM
+  // AVANÇO DE QUESTÃO E TELA FINAL COM MEDALHAS
   // ============================================================
   function advanceQuestion() {
     questionNumber++;
@@ -1097,6 +1353,9 @@
     const nextQ = generateQuestion();
     statusMsg.textContent = "Preparando...";
     statusIcon.textContent = "🚌";
+    
+    resetBusLayout();
+
     setTimeout(() => runQuestion(nextQ), 500);
   }
 
@@ -1104,6 +1363,21 @@
     replayBtn.disabled = true;
     document.getElementById("finalScore").textContent = score;
     document.getElementById("finalStats").textContent = `${firstTryCorrect} de ${TOTAL_QUESTIONS} acertos na primeira tentativa.`;
+
+    const medalIcon = document.getElementById("medalIcon");
+    const medalTitle = document.getElementById("medalTitle");
+
+    if (score >= 90) {
+      medalIcon.textContent = "🥇";
+      medalTitle.textContent = "Medalha de Ouro!";
+    } else if (score >= 50) {
+      medalIcon.textContent = "🥈";
+      medalTitle.textContent = "Medalha de Prata!";
+    } else {
+      medalIcon.textContent = "🥉";
+      medalTitle.textContent = "Medalha de Bronze!";
+    }
+
     document.getElementById("endModal").classList.remove("hidden");
     SoundManager.play('levelUp');
   }
@@ -1127,8 +1401,7 @@
 
   document.getElementById("playAgainBtn").addEventListener("click", () => {
     document.getElementById("endModal").classList.add("hidden");
-    busContainer.style.transition = "none";
-    busContainer.style.left = `${getOffscreenLeft()}px`;
+    resetBusLayout();
     startGame();
   });
 
