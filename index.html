@@ -114,14 +114,13 @@
   .bus-comp-layout {
     width: 94% !important;
     max-width: 540px !important;
-    height: 105px !important; /* Aumentado para dar espaço à tarja */
+    height: 105px !important;
     transition: left 0.6s ease, top 0.6s ease, bottom 0.6s ease, transform 0.6s ease;
   }
   @media (min-width: 768px) {
     .bus-comp-layout { height: 125px !important; max-width: 620px !important; }
   }
 
-  /* Posições mais próximas para telas de celular */
   #busContainer.bus-comp-bottom {
     bottom: 8% !important;
     top: auto !important;
@@ -157,7 +156,7 @@
     bottom: 4px; 
     left: 8px;
     right: 8px;
-    top: 50px; /* Ajustado para ficar no meio do vão livre */
+    top: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -172,10 +171,9 @@
   }
   @media (min-width: 768px) { .comp-tag-inside { font-size: 2rem; top: 60px; } }
 
-  /* Pista (Asfalto) para o ônibus de cima */
   #topRoad {
     position: absolute;
-    top: calc(10% + 105px); /* Alinhado com a altura do ônibus de cima */
+    top: calc(10% + 105px);
     left: 0;
     width: 100%;
     height: 18px;
@@ -279,7 +277,6 @@
           <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span class="text-[7px] md:text-[9px] font-extrabold text-white/20 absolute top-0.5 left-1 hidden md:block">10</span><span id="seat9" class="animal-in-seat text-lg md:text-3xl"></span></div>
         </div>
 
-        <!-- Tarja de Comparação para o Ônibus 1 (Verde) -->
         <div id="compTag1" class="comp-tag-inside hidden">X a mais</div>
 
         <div class="absolute -bottom-4 md:-bottom-5 left-[10%] w-10 h-10 md:w-12 md:h-12 bg-slate-900 border-4 border-slate-800 rounded-full flex items-center justify-center shadow-lg z-50">
@@ -321,7 +318,6 @@
           <div class="window-seat rounded-md md:rounded-lg border-2 border-slate-950 flex items-center justify-center relative overflow-hidden"><span id="seat2_9" class="animal-in-seat text-lg md:text-3xl"></span></div>
         </div>
 
-        <!-- Tarja de Comparação para o Ônibus 2 (Amarelo) -->
         <div id="compTag2" class="comp-tag-inside hidden">X a mais</div>
 
         <div class="absolute -bottom-4 md:-bottom-5 left-[10%] w-10 h-10 md:w-12 md:h-12 bg-slate-900 border-4 border-slate-800 rounded-full flex items-center justify-center shadow-lg z-50">
@@ -403,10 +399,11 @@
 <script>
 (() => {
   // ============================================================
-  // SOUND MANAGER
+  // SOUND MANAGER (Com o som inicial adicionado)
   // ============================================================
   const SOUNDS_BASE = 'sounds/';
   const SOUND_FILES = {
+    soundInit:        SOUNDS_BASE + 'soundInit.mp3',
     busArriving:      SOUNDS_BASE + 'bus-arriving.mp3',
     animalsBoarding:  SOUNDS_BASE + 'animals-boarding.mp3',
     animalsLeaving:   SOUNDS_BASE + 'animals-leaving.mp3',
@@ -445,6 +442,9 @@
   })();
   SoundManager.init();
 
+  // Toca o som da tela inicial
+  SoundManager.play('soundInit');
+
   // ============================================================
   // CONSTANTES E HELPERS
   // ============================================================
@@ -463,7 +463,6 @@
     return arr;
   };
 
-  // PLANEJAMENTO DAS FASES CONFORME SOLICITADO
   const QUESTION_PLAN = [
     { scenario: 1, diff: 'easy',   transform: 'single' }, // Q1: 1 ônibus
     { scenario: 3, diff: 'easy',   transform: 'single' }, // Q2: 1 ônibus
@@ -1067,11 +1066,9 @@
     await sleep(600);
     if (myToken !== gameToken) return;
 
-    // CORREÇÃO B: Revela APENAS o ônibus visível
     const revealedBusId = q.revealWhich === 'green' ? 1 : 2;
     setWindowsRevealed(true, revealedBusId);
     
-    // O ônibus oculto NÃO é revelado (janelas continuam pretas)
     const hiddenBusId = q.revealWhich === 'green' ? 2 : 1;
     setWindowsRevealed(false, hiddenBusId);
     
@@ -1089,7 +1086,7 @@
   }
 
   // ============================================================
-  // ANIMAÇÕES DE ANIMAIS (CENÁRIOS 1, 2, 3)
+  // ANIMAÇÕES DE ANIMAIS
   // ============================================================
   async function performTransformations(q, myToken) {
     const busRect = busContainer.getBoundingClientRect();
@@ -1260,7 +1257,7 @@
   });
 
   // ============================================================
-  // CLIQUE EM OPÇÃO (PONTUAÇÃO BASEADA EM 100 PONTOS MÁXIMO)
+  // CLIQUE EM OPÇÃO
   // ============================================================
   function handleOptionClick(idx, q) {
     if (optionsLocked) return;
@@ -1289,7 +1286,6 @@
       statusIcon.textContent = "🎉";
       statusMsg.textContent = `Isso! ${opt.hint}`;
 
-      // CORREÇÃO B: Revela ambos os ônibus para mostrar a resposta certa
       setWindowsRevealed(true, 1);
       setWindowsRevealed(true, 2);
       renderSeats(true);
@@ -1324,7 +1320,6 @@
             statusIcon.textContent = "💡";
             statusMsg.textContent = `A resposta era ${currentOptions[correctIdx].val}. ${currentOptions[correctIdx].hint}`;
             
-            // CORREÇÃO B: Revela ambos ao final
             setWindowsRevealed(true, 1);
             setWindowsRevealed(true, 2);
             renderSeats(true);
