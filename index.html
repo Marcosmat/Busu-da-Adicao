@@ -432,15 +432,18 @@
       }
     }
     function play(key, { volume = 0.7 } = {}) {
-      if (!enabled) return;
+      if (!enabled) return null;
       const t = cache[key];
-      if (!t) return;
+      if (!t) return null;
       try {
         const c = t.cloneNode();
         c.volume = volume;
         const p = c.play();
         if (p && p.catch) p.catch(() => {});
-      } catch (e) {}
+        return c;
+      } catch (e) {
+        return null;
+      }
     }
     function setEnabled(v) { enabled = v; }
     function isEnabled() { return enabled; }
@@ -499,6 +502,7 @@
   let optionsLocked = false;
   let currentPassengers = [];
   let currentPassengers2 = [];
+  let initAudioInstance = null; // Variável para armazenar a instância do som inicial
 
   let equationRevealed = false;
   let isNextStopPending = false;
@@ -548,7 +552,7 @@
   // PRELOADER LOGIC
   // ============================================================
   playBtn.addEventListener("click", () => {
-    SoundManager.play('soundInit');
+    initAudioInstance = SoundManager.play('soundInit'); // Salva a instância do áudio
     preloaderOverlay.classList.add("hidden");
     modalOverlay.classList.remove("hidden");
   });
@@ -1423,6 +1427,12 @@
   }
 
   document.getElementById("startModalBtn").addEventListener("click", () => {
+    // Para o som inicial se ele estiver tocando
+    if (initAudioInstance) {
+      initAudioInstance.pause();
+      initAudioInstance.currentTime = 0;
+    }
+
     document.getElementById("modalOverlay").classList.add("hidden");
     startGame();
   });
