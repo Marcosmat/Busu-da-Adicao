@@ -149,11 +149,12 @@
     }
   }
 
+  /* --- ALTERAÇÃO AQUI: TARJA COM FUNDO BRANCO E BORDA --- */
   .comp-tag-inside {
     position: absolute;
-    bottom: 4px; 
-    left: 8px;
-    right: 8px;
+    bottom: 6px; 
+    left: 12px;
+    right: 12px;
     top: 50px;
     display: flex;
     align-items: center;
@@ -161,14 +162,16 @@
     font-size: 1.5rem;
     font-weight: 900;
     color: #000000 !important;
-    background-color: transparent !important;
-    border: none !important;
-    text-shadow: none !important;
+    background-color: #ffffff !important; /* Fundo Branco */
+    border: 3px solid #1e293b !important; /* Borda escura */
+    border-radius: 0.5rem; /* Cantos arredondados */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Sombrinha */
     z-index: 50;
     pointer-events: none;
   }
-  @media (min-width: 768px) { .comp-tag-inside { font-size: 2rem; top: 60px; } }
+  @media (min-width: 768px) { .comp-tag-inside { font-size: 2rem; top: 60px; bottom: 8px; } }
 
+  /* Pista extra temporária */
   #topRoad {
     position: absolute;
     top: calc(10% + 105px);
@@ -377,7 +380,7 @@
         <p>🔍 Descubra o número escondido e compare os ônibus!</p>
         <p>👀 Calcule bem e escolha a <strong>resposta certa!</strong> </p>
         <p>💡 Acertos de primeira valem mais pontos!</p>
-        <p>💡 <strong>Se Usar a ajuda 'Ver Conta' você ganha menos pontos!</strong></p>
+        <p>💡 <strong>Se usar a ajuda 'Ver Conta' você ganha menos pontos!</strong></p>
       </div>
       <button id="startModalBtn" class="w-full bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-black text-lg md:text-xl py-3 md:py-4 rounded-xl border-3 border-slate-800 shadow-[0_4px_0_#1e293b] active:translate-y-1 active:shadow-none transition-all mt-2">
         Iniciar Jogo 🚀
@@ -502,7 +505,7 @@
   let optionsLocked = false;
   let currentPassengers = [];
   let currentPassengers2 = [];
-  let initAudioInstance = null; // Variável para armazenar a instância do som inicial
+  let initAudioInstance = null;
 
   let equationRevealed = false;
   let isNextStopPending = false;
@@ -552,7 +555,7 @@
   // PRELOADER LOGIC
   // ============================================================
   playBtn.addEventListener("click", () => {
-    initAudioInstance = SoundManager.play('soundInit'); // Salva a instância do áudio
+    initAudioInstance = SoundManager.play('soundInit');
     preloaderOverlay.classList.add("hidden");
     modalOverlay.classList.remove("hidden");
   });
@@ -1427,7 +1430,6 @@
   }
 
   document.getElementById("startModalBtn").addEventListener("click", () => {
-    // Para o som inicial se ele estiver tocando
     if (initAudioInstance) {
       initAudioInstance.pause();
       initAudioInstance.currentTime = 0;
