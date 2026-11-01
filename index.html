@@ -443,7 +443,7 @@
   SoundManager.init();
 
   // Toca o som da tela inicial
-  SoundManager.play('soundInit');
+  // SoundManager.play('soundInit');
 
   // ============================================================
   // CONSTANTES E HELPERS
@@ -858,8 +858,8 @@
     }
     if (q.scenario === 1) {
       if (q.leave > 0 && q.board > 0) return `Havia ${q.initial}. Saíram ${q.leave} (subtrai). Entraram ${q.board} (soma). Faça: ${q.initial} − ${q.leave} + ${q.board} = ${q.final}.`;
-      if (q.leave > 0) return `Havia ${q.initial} e saíram ${q.leave}. Quem sai, subtrai: ${q.initial} − ${q.leave} = ${q.final}.`;
-      return `Havia ${q.initial} e entraram ${q.board}. Quem entra, soma: ${q.initial} + ${q.board} = ${q.final}.`;
+      if (q.leave > 0) return `Havia ${q.initial} e saíram ${q.leave}. Então: ${q.initial} − ${q.leave} = ${q.final}.`;
+      return `Havia ${q.initial} e entraram ${q.board}. Então: ${q.initial} + ${q.board} = ${q.final}.`;
     }
     if (q.scenario === 2) {
       if (q.leave > 0 && q.board > 0) return `Agora há ${q.final}. Para descobrir o início, desfaça: ${q.final} − ${q.board} + ${q.leave} = ${q.initial}.`;
@@ -1355,6 +1355,9 @@
   }
 
   function showEndScreen() {
+  
+    SoundManager.play('soundInit');
+
     replayBtn.disabled = true;
     document.getElementById("finalScore").textContent = score;
     document.getElementById("finalStats").textContent = `${firstTryCorrect} de ${TOTAL_QUESTIONS} acertos na primeira tentativa.`;
