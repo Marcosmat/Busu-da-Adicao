@@ -149,7 +149,7 @@
     }
   }
 
-  /* --- ALTERAÇÃO AQUI: TARJA COM FUNDO BRANCO E BORDA --- */
+  /* TARJA COM FUNDO BRANCO E BORDA */
   .comp-tag-inside {
     position: absolute;
     bottom: 6px; 
@@ -162,10 +162,10 @@
     font-size: 1.5rem;
     font-weight: 900;
     color: #000000 !important;
-    background-color: #ffffff !important; /* Fundo Branco */
-    border: 3px solid #1e293b !important; /* Borda escura */
-    border-radius: 0.5rem; /* Cantos arredondados */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Sombrinha */
+    background-color: #ffffff !important;
+    border: 3px solid #1e293b !important;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     z-index: 50;
     pointer-events: none;
   }
@@ -203,6 +203,7 @@
     
     <div class="flex items-center justify-center gap-2 md:gap-4 font-bold text-sm md:text-lg">
       <button id="replayBtn" disabled title="Repetir questão atual" class="bg-slate-200 hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-slate-800 rounded-xl px-3 py-1.5 md:px-4 md:py-2 shadow-[0_3px_0_#1e293b] active:translate-y-1 active:shadow-none transition-all">🔄</button>
+      <!-- CONTROLE DE SOM ORIGINAL MANTIDO AQUI -->
       <button id="muteBtn" title="Som" class="bg-slate-100 hover:bg-slate-200 border-2 border-slate-800 rounded-xl px-3 py-1.5 md:px-4 md:py-2 shadow-[0_3px_0_#1e293b] active:translate-y-1 active:shadow-none transition-all">🔊</button>
       <div class="bg-amber-100 border-2 border-slate-800 rounded-xl px-3 py-1.5 md:px-4 md:py-2 flex items-center gap-1.5 shadow-[0_3px_0_#1e293b]">
         <span>⭐</span><span id="scoreVal" class="text-amber-800">0</span>
@@ -362,9 +363,22 @@
     </div>
   </footer>
 
-  <!-- Preloader Overlay -->
-  <div id="preloaderOverlay" class="fixed inset-0 bg-slate-900 flex flex-col items-center justify-center p-4 z-[60]">
-    <h1 class="text-5xl md:text-7xl font-black text-white mb-10 text-center drop-shadow-lg tracking-wide">Busão da Adição</h1>
+  <!-- Preloader Overlay (TELA INICIAL ATUALIZADA) -->
+  <div id="preloaderOverlay" class="fixed inset-0 bg-slate-900 flex flex-col items-center justify-center p-4 z-[60] overflow-y-auto">
+    
+    <!-- IMAGEM DE CAPA -->
+    <img src="busao_capa.jfif" alt="Busão da Adição" class="w-full max-w-sm md:max-w-md mb-6 rounded-3xl border-4 border-slate-800 shadow-[0_0_40px_rgba(251,191,36,0.3)]">
+
+    <h1 class="text-4xl md:text-6xl font-black text-white mb-6 text-center drop-shadow-lg tracking-wide">Busão da Adição</h1>
+    
+    <!-- CONTROLE DE SOM NA TELA INICIAL -->
+    <div class="flex items-center gap-3 mb-8 bg-slate-800 px-6 py-3 rounded-2xl border-2 border-slate-700 shadow-lg">
+      <span class="text-white font-bold text-lg md:text-xl">Deseja som?</span>
+      <button id="preloaderMuteBtn" class="bg-slate-100 hover:bg-slate-200 border-2 border-slate-800 rounded-xl px-4 py-2 shadow-[0_3px_0_#1e293b] active:translate-y-1 active:shadow-none transition-all text-xl md:text-2xl">
+        🔊
+      </button>
+    </div>
+
     <button id="playBtn" class="bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-black text-2xl md:text-3xl py-4 px-16 rounded-2xl border-4 border-slate-800 shadow-[0_6px_0_#1e293b] active:translate-y-2 active:shadow-none transition-all">
      🦉 Jogar 🦉
     </button>
@@ -535,6 +549,7 @@
   
   const replayBtn = document.getElementById("replayBtn");
   const muteBtn = document.getElementById("muteBtn");
+  const preloaderMuteBtn = document.getElementById("preloaderMuteBtn"); // NOVO BOTÃO DE SOM DA TELA INICIAL
 
   const optionsArea = document.getElementById("optionsArea");
   const optionsGrid = document.getElementById("optionsGrid");
@@ -559,6 +574,25 @@
     preloaderOverlay.classList.add("hidden");
     modalOverlay.classList.remove("hidden");
   });
+
+  // ============================================================
+  // CONTROLE DE SOM (SINCRONIZADO)
+  // ============================================================
+  function toggleSound() {
+    const next = !SoundManager.isEnabled();
+    SoundManager.setEnabled(next);
+    
+    // Atualiza o ícone do botão do cabeçalho
+    muteBtn.textContent = next ? "🔊" : "🔇";
+    
+    // Atualiza o ícone do botão da tela inicial
+    if (preloaderMuteBtn) {
+      preloaderMuteBtn.textContent = next ? "🔊" : "🔇";
+    }
+  }
+
+  muteBtn.addEventListener("click", toggleSound);
+  preloaderMuteBtn.addEventListener("click", toggleSound);
 
   // ============================================================
   // HUD E UTILITÁRIOS VISUAIS
@@ -1448,12 +1482,6 @@
   replayBtn.addEventListener("click", () => {
     if (!currentQuestion || isNextStopPending) return;
     runQuestion(currentQuestion);
-  });
-
-  muteBtn.addEventListener("click", () => {
-    const next = !SoundManager.isEnabled();
-    SoundManager.setEnabled(next);
-    muteBtn.textContent = next ? "🔊" : "🔇";
   });
 
 })();
